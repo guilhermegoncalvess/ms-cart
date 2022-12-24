@@ -1,5 +1,47 @@
-apiVersion: 1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: ms-user
+  creationTimestamp: null
   labels:
+    app: ms-cart
+  name: ms-cart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-cart
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ms-cart
+    spec:
+      containers:
+        - image: gcr.io/learning-357114/ms-cart:1.0.0
+          name: ms-cart
+          resources: {}
+          imagePullPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+  labels:
+    app: ms-cart
+  name: ms-cart
+  namespace: default
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 50051
+    protocol: TCP
+    targetPort: 50051
+  selector:
+    app: ms-cart
+  type: ClusterIP
