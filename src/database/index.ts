@@ -1,11 +1,11 @@
 import { MongoClient } from 'mongodb';
 
-const uri = `mongodb://localhost:27017`;
+const uri = `mongodb+srv://db-catalog:8IdhVFEd6Xv6MIL5@cluster0.wgj29k0.mongodb.net/?retryWrites=true&w=majority`;
 
 const databaseClient = new MongoClient(uri, {
   auth: {
-    username: '',
-    password: '',
+    username: 'db-catalog',
+    password: '8IdhVFEd6Xv6MIL5',
   },
 });
 

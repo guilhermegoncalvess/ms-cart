@@ -39,4 +39,12 @@ cartRouter.get('/cart/user/:id', async (request, response) => {
   return response.json(cart);
 });
 
+cartRouter.post('/cart/order/send', async (request, response) => {
+  const cartController = new CartController();
+
+  const cart = await cartController.sendOrder(request);
+
+  return response.json(cart);
+});
+
 export default cartRouter;

@@ -1,5 +1,5 @@
 {
-  "name": "ms-cart",
+  "name": "backend-cart",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -11,6 +11,7 @@
     "test": "cross-env NODE_ENV=test jest"
   },
   "dependencies": {
+    "@google-cloud/pubsub": "^3.2.1",
     "@grpc/grpc-js": "^1.6.9",
     "@grpc/proto-loader": "^0.7.0",
     "@types/bcryptjs": "^2.4.2",

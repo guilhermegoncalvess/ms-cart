@@ -27,4 +27,11 @@ export default class CartController {
 
     return cartRepository.remove({ id, userId });
   }
+
+  async sendOrder(payload: any): Promise<Cart> {
+    const { id, userId } = payload.params;
+    const cartRepository = new CartRepository();
+
+    return cartRepository.findById(userId);
+  }
 }

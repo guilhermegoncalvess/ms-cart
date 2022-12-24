@@ -27,7 +27,7 @@ class CartRepository implements CartInterface {
         if (product.quantity === 0)
           cart.products = cart.products.filter(item => item.id !== product.id);
         else cart.products[productIndex] = product;
-      else cart.products.push(product);
+      else cart.products = [...cart.products, product];
 
       cart.totalPrice = cart.products.reduce((acc, { value, quantity }) => {
         return acc + value * quantity;
