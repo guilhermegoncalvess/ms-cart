@@ -39,12 +39,12 @@ spec:
   - IPv4
   ipFamilyPolicy: SingleStack
   ports:
-  - name: service-port-grpc
-    port: 50051
+  - port: 50051
+    name: service-port-grpc
     protocol: TCP
     targetPort: 50051
-  - name: service-port-http
-    port: 3333
+  - port: 3333
+    name: service-port-http
     protocol: TCP
     targetPort: 3333
   selector:
