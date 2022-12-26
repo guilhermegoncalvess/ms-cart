@@ -31,7 +31,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: ms-user
+    app: ms-cart
   ports:
   - protocol: TCP
     port: 3333
