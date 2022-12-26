@@ -1,9 +1,11 @@
 import { Router } from 'express';
 
-import productsRouter from './cart.routes';
+import cartRouter from './cart.routes';
 
 const routes = Router();
 
-routes.use('/', productsRouter);
-
+routes.use('/cart', cartRouter);
+routes.use('/', async (request, response) => {
+  return response.json({});
+});
 export default routes;

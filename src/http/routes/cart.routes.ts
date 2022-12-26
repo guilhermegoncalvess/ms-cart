@@ -13,7 +13,7 @@ cartRouter.put('/cart/product/', async (request, response) => {
 });
 
 cartRouter.delete(
-  '/cart/user/:userId/product/:id',
+  '/user/:userId/product/:id',
   async (request, response) => {
     const cartController = new CartController();
 
@@ -23,7 +23,7 @@ cartRouter.delete(
   },
 );
 
-cartRouter.get('/cart/', async (request, response) => {
+cartRouter.get('/', async (request, response) => {
   const cartController = new CartController();
 
   const cart = await cartController.findAll();
@@ -31,7 +31,7 @@ cartRouter.get('/cart/', async (request, response) => {
   return response.json(cart);
 });
 
-cartRouter.get('/cart/user/:id', async (request, response) => {
+cartRouter.get('/user/:id', async (request, response) => {
   const cartController = new CartController();
 
   const cart = await cartController.findById(request);
@@ -39,7 +39,7 @@ cartRouter.get('/cart/user/:id', async (request, response) => {
   return response.json(cart);
 });
 
-cartRouter.post('/cart/order/send', async (request, response) => {
+cartRouter.post('/order/send', async (request, response) => {
   const cartController = new CartController();
 
   const cart = await cartController.sendOrder(request);
