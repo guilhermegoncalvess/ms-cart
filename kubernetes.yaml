@@ -23,19 +23,33 @@ spec:
           resources: {}
           imagePullPolicy: Always
           ports:
-          - containerPort: 3333
-            protocol: TCP
+            - containerPort: 3333
+              protocol: TCP
 status: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+  labels:
+    app: ms-cart
   name: ms-cart
+  namespace: default
 spec:
-  type: NodePort
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: service-port-grpc
+      port: 50051
+      protocol: TCP
+      targetPort: 50051
+    - name: service-port-http
+      port: 3333
+      protocol: TCP
+      targetPort: 3333
   selector:
     app: ms-cart
-  ports:
-  - port: 3333
-    protocol: TCP
-    targetPort: 3333
+  type: ClusterIP
