@@ -29,7 +29,10 @@ class CartRepository implements CartInterface {
             item => item.id !== product.id,
           );
         else newCart.products[productIndex] = product;
-      else newCart.products = [...newCart.products, product];
+      else {
+        if (product.quantity > 0)
+          newCart.products = [...newCart.products, product];
+      }
 
       newCart.totalPrice = newCart.products.reduce(
         (acc, { value, quantity }) => {
