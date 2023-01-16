@@ -9,6 +9,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import routes from './http/routes';
 import AppError from './errors/AppError';
+import grpcServer from './http/grpc/grpcServer';
 
 const app: Express = express();
 
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }) as RequestHandler);
 
 app.use(routes);
 
+grpcServer();
 app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
   if (err instanceof AppError) {
     return response.status(err.statusCode).json({

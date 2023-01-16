@@ -11,42 +11,48 @@ class CartRepository implements CartInterface {
     this.collection = databaseClient.db('cart').collection('cart');
   }
 
-  public async insert(payload: CartPayload): Promise<Cart | any> {
+  public async insert(payload: CartPayload): Promise<any> {
     const { userId, product } = payload;
 
-    const cart = await this.collection.findOne<Cart>({
-      userId,
-    });
+    const cart = await this.findByUserId(userId);
 
     if (cart) {
       const productIndex = cart.products.findIndex(
         item => item.id === product.id,
       );
 
-      if (productIndex >= 0)
-        if (product.quantity === 0)
-          cart.products = cart.products.filter(item => item.id !== product.id);
-        else cart.products[productIndex] = product;
-      else cart.products = [...cart.products, product];
+      const newCart = cart;
 
-      cart.totalPrice = cart.products.reduce((acc, { value, quantity }) => {
-        return acc + value * quantity;
-      }, 0);
+      if (productIndex >= 0)
+        if (product.quantity <= 0)
+          newCart.products = newCart.products.filter(
+            item => item.id !== product.id,
+          );
+        else newCart.products[productIndex] = product;
+      else newCart.products = [...newCart.products, product];
+
+      newCart.totalPrice = newCart.products.reduce(
+        (acc, { value, quantity }) => {
+          return acc + value * quantity;
+        },
+        0,
+      );
 
       await this.collection.updateOne(
         { userId },
         {
           $set: {
-            products: cart.products,
-            totalPrice: cart.totalPrice,
+            products: newCart.products,
+            totalPrice: newCart.totalPrice,
           },
         },
       );
-      return cart;
+
+      return newCart;
     }
 
     if (!product.quantity) {
-      return new AppError('The quantity value must be greater then 0');
+      throw new AppError('The quantity value must be greater then 0');
     }
 
     const newCart = {
@@ -54,7 +60,9 @@ class CartRepository implements CartInterface {
       products: [product],
       totalPrice: product.value * product.quantity,
     };
+
     await this.collection.insertOne(newCart);
+
     return newCart;
   }
 
@@ -62,18 +70,12 @@ class CartRepository implements CartInterface {
     return this.collection.find<Cart>({}).toArray();
   }
 
-  public async findById(id: string): Promise<Cart> {
-    try {
-      const cart = await this.collection.findOne<Cart>({
-        userId: id,
-      });
+  public async findByUserId(id: string): Promise<Cart | null> {
+    const cart = await this.collection.findOne<Cart>({
+      userId: id,
+    });
 
-      if (!cart) throw new AppError('could not find the cart.', 404);
-
-      return cart;
-    } catch (err: any) {
-      return err;
-    }
+    return cart;
   }
 
   public async remove(payload: any): Promise<any> {

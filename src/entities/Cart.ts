@@ -12,5 +12,4 @@ export interface Cart {
 export interface CartPayload {
   userId: string;
   product: Produtc;
-  quantity: number;
 }
