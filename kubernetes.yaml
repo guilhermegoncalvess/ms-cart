@@ -20,11 +20,16 @@ spec:
       containers:
         - image: gcr.io/learning-357114/ms-cart:2.0.0
           name: ms-cart
-          resources: {}
           imagePullPolicy: Always
           ports:
             - containerPort: 3333
               protocol: TCP
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              memory: '400Mi'
 status: {}
 ---
 apiVersion: v1
