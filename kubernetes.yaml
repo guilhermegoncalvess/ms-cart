@@ -18,7 +18,7 @@ spec:
         app: ms-cart
     spec:
       containers:
-        - image: gcr.io/learning-357114/ms-cart:2.0.0
+        - image: gcr.io/learning-357114/ms-cart:3.0.0
           name: ms-cart
           imagePullPolicy: Always
           ports:

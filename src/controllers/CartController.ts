@@ -1,13 +1,17 @@
 import { Cart } from '../entities/Cart';
-import AppError from '../errors/AppError';
 import CartRepository from '../repositories/CartRepository';
+import CartService from '../services/CartService';
+
+import AppError from '../errors/AppError';
+
 import rpc from '../http/grpc/grpcClient';
 import Produtc from '../entities/Product';
 
 export default class CartController {
   async insert(payload: any): Promise<any> {
     const { product, userId } = payload;
-    const cartRepository = new CartRepository();
+
+    const cartService = new CartService();
 
     const user = await new Promise((resolve: any, reject: any) => {
       rpc.user.GetUser({ id: userId }, (err: any, res: any) => {
@@ -20,7 +24,7 @@ export default class CartController {
       throw new AppError('Could not find the user', 404);
     }
 
-    const productResponse: Produtc = await new Promise(
+    const productsReponse: Produtc = await new Promise(
       (resolve: any, reject: any) => {
         rpc.product.GetProduct({ id: product.id }, (err: any, res: any) => {
           if (err) return reject(err);
@@ -29,35 +33,35 @@ export default class CartController {
       },
     );
 
-    if (!productResponse) {
+    console.log('produto', productsReponse)
+    if (!productsReponse) {
       throw new AppError('Could not find product', 404);
     }
 
-    const newProduct = {
-      product: { ...productResponse, quantity: product.quantity },
-      userId,
-    };
-
-    return cartRepository.insert(newProduct);
+    return cartService.insert({ userId, product: { ...productsReponse, quantity: product.quantity } });
   }
 
   async findAll(): Promise<Cart[]> {
-    const cartRepository = new CartRepository();
+    const cartService = new CartService();
 
-    return cartRepository.findAll();
+    return cartService.findAll();
   }
 
   async findByUserId(payload: any): Promise<Cart | null> {
-    const { id } = payload.params;
-    const cartRepository = new CartRepository();
+    const { id } = payload
+    const cartService = new CartService();
 
-    return cartRepository.findByUserId(id);
+    const cart = await cartService.findByUserId(id);
+
+    const cartRepository = new CartRepository();
+    await cartRepository.clear(id)
+
+    return cart
   }
 
   async remove(payload: any): Promise<Cart> {
-    const { id, userId } = payload.params;
-    const cartRepository = new CartRepository();
+    const cartService = new CartService();
 
-    return cartRepository.remove({ id, userId });
+    return cartService.remove(payload);
   }
 }

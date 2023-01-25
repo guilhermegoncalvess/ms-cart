@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import { CartInterface } from '../interfaces/Cart';
 import { databaseClient } from '../database/index';
 import AppError from '../errors/AppError';
@@ -18,20 +18,22 @@ class CartRepository implements CartInterface {
 
     if (cart) {
       const productIndex = cart.products.findIndex(
-        item => item.id === product.id,
+        item => item._id === product._id,
       );
 
       const newCart = cart;
-
-      if (productIndex >= 0)
-        if (product.quantity <= 0)
-          newCart.products = newCart.products.filter(
-            item => item.id !== product.id,
-          );
-        else newCart.products[productIndex] = product;
+      if (productIndex >= 0) {
+        if (product.quantity <= 0) {
+          newCart.products = newCart.products.filter(item => item._id !== product._id);
+        }
+        else {
+          newCart.products[productIndex] = product;
+        }
+      }
       else {
-        if (product.quantity > 0)
+        if (product.quantity > 0) {
           newCart.products = [...newCart.products, product];
+        }
       }
 
       newCart.totalPrice = newCart.products.reduce(
@@ -91,7 +93,7 @@ class CartRepository implements CartInterface {
     if (!cart) {
       throw new AppError('could not find cart to user');
     }
-    cart.products = cart.products.filter(item => item.id !== id);
+    cart.products = cart.products.filter(item => item._id !== id);
 
     cart.totalPrice = cart.products.reduce((acc, { value, quantity }) => {
       return acc + value * quantity;
@@ -103,6 +105,28 @@ class CartRepository implements CartInterface {
         $set: {
           products: cart.products,
           totalPrice: cart.totalPrice,
+        },
+      },
+    );
+
+    return cart;
+  }
+
+  public async clear(id: any): Promise<any> {
+    const cart = await this.collection.findOne<Cart>({
+      'userId': id,
+    });
+
+    if (!cart) {
+      throw new AppError('could not find cart to user');
+    }
+
+    await this.collection.updateOne(
+      { 'userId': id },
+      {
+        $set: {
+          products: [],
+          totalPrice: 0,
         },
       },
     );

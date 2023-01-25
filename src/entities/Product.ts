@@ -1,5 +1,5 @@
 export default interface Produtc {
-  id: string;
+  _id: string;
   name?: string;
   description?: string;
   value: number;
